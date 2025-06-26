@@ -2,17 +2,20 @@ package dev.gabus.copypech.service;
 
 import dev.gabus.copypech.entity.ClipboardEntry;
 import dev.gabus.copypech.repository.ClipboardEntryRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate; // 1. Importa la clase para enviar mensajes
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ClipboardService {
-     private final ClipboardEntryRepository clipboardEntryRepository;
+    private final ClipboardEntryRepository clipboardEntryRepository;
+    private final SimpMessagingTemplate messagingTemplate; // 2. Inyecta el template para enviar mensajes
 
     // Inyección de dependencias a través del constructor
-    public ClipboardService(ClipboardEntryRepository clipboardEntryRepository) {
+    public ClipboardService(ClipboardEntryRepository clipboardEntryRepository, SimpMessagingTemplate messagingTemplate) {
         this.clipboardEntryRepository = clipboardEntryRepository;
+        this.messagingTemplate = messagingTemplate; // 3. Asigna el template inyectado
     }
 
     /**
@@ -22,6 +25,7 @@ public class ClipboardService {
      * @param content El contenido a guardar.
      * @return El objeto ClipboardEntry guardado.
      */
+
     public ClipboardEntry saveClipboardEntry(String deviceId, String contentType, String content) {
         ClipboardEntry entry = new ClipboardEntry();
         entry.setDeviceId(deviceId);
@@ -29,7 +33,14 @@ public class ClipboardService {
         entry.setContent(content);
         entry.setCreatedAt(LocalDateTime.now()); // Establece la fecha y hora actual
         
-        return clipboardEntryRepository.save(entry); // Usa el método 'save' del repositorio
+        ClipboardEntry savedEntry = clipboardEntryRepository.save(entry);
+        
+        // 4. NOTIFICAR A TODOS LOS CLIENTES CONECTADOS
+        // Envía el objeto guardado a un destino del broker.
+        // Los clientes que se suscriban a "/topic/clipboard-updates" recibirán este mensaje.
+        messagingTemplate.convertAndSend("/topic/clipboard-updates", savedEntry);
+
+        return savedEntry;
     }
 
     /**
