@@ -1,0 +1,39 @@
+#---------------------------------------------------
+# Ignorar archivos del Backend (Spring Boot / Maven)
+#---------------------------------------------------
+/backend/target/
+/backend/pom.xml.tag
+/backend/pom.xml.releaseBackup
+/backend/pom.xml.versionsBackup
+/backend/release.properties
+/backend/dependency-reduced-pom.xml
+/backend/build/
+*.class
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.log
+
+# Archivos específicos de IDEs (IntelliJ IDEA, VS Code, Eclipse)
+/backend/.idea/
+/backend/*.iml
+.vscode/
+
+# Configuración de entorno local
+/backend/.env
+/backend/clipboard_db.mv.db # Ignora el archivo de la base de datos H2
+/backend/clipboard_db.trace.db # Ignora el archivo de traza de la base de datos H2
+
+#---------------------------------------------------
+# Ignorar archivos del Frontend (Angular / Node)
+#---------------------------------------------------
+/frontend/node_modules/
+/frontend/dist/
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# Archivos de caché del SO
+.DS_Store
+Thumbs.db
